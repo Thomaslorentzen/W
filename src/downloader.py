@@ -5,6 +5,10 @@ import requests
 import threading
 from threading import Lock
 import time
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)  # Set the logging level to DEBUG
 
 # Define a lock for thread safety when accessing/modifying metadata_df
 metadata_lock = Lock()
@@ -48,6 +52,11 @@ def download_report(url, br_number, output_folder, metadata_df, metadata_excel_f
         with metadata_lock:
             metadata_df.loc[metadata_df['Brnum'] == br_number, 'pdf_downloaded'] = 'yes'
             print(f"Metadata updated for BRNum: {br_number}")
+
+            # Debug statements to verify metadata update
+        print("Metadata DataFrame After Update:")
+        print(metadata_df)
+
 
         print(f"Report downloaded: {url}")
 
@@ -100,10 +109,12 @@ def download_reports_from_excel(excel_file, url_column, br_number_column, output
         df = pd.read_excel(excel_file)
         metadata_df = pd.read_excel(metadata_excel_file)
 
-        print("Before DataFrame Update:")
-        print(metadata_df.head())  # Print first few rows of metadata_df before update
+        # Debug statements to check metadata initialization
+        print("Metadata DataFrame After Reading from Excel:")
+        print(metadata_df.head())
 
         estimate_time_per_report(df, url_column, br_number_column, output_folder, metadata_df, sample_size=100)
+
 
         # Continue with downloading all reports using threading
         count = 0
@@ -114,6 +125,7 @@ def download_reports_from_excel(excel_file, url_column, br_number_column, output
             url = row[url_column]
             br_number = row[br_number_column]
             if pd.notnull(url):
+                logging.debug(f"Downloading report for BRNum: {br_number}, URL: {url}")
                 thread = threading.Thread(target=download_report, args=(url, br_number, output_folder, metadata_df, metadata_excel_file, skip_existing))
                 threads.append(thread)
                 thread.start()
@@ -122,13 +134,13 @@ def download_reports_from_excel(excel_file, url_column, br_number_column, output
         for thread in threads:
             thread.join()
 
-        print("After DataFrame Update:")
-        print(metadata_df.head())  # Print first few rows of metadata_df after update
+        logging.debug("After DataFrame Update:")
+        logging.debug(metadata_df.head())  # Print first few rows of metadata_df after update
 
         print_downloaded_reports(metadata_df)
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")
 
 
 
