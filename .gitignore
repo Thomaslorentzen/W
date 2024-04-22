@@ -1,2 +1,5 @@
 myenv/ 
 reports/
+
+*.pyc
+__pycache__/

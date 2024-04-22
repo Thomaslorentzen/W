@@ -9,3 +9,5 @@ Simply, from the IDE, create a new folder in the "W" repo, and name it "reports"
 The download will make the files download to that exact folder name.
 
 Alternatively, you can change the target folder to your own desired path, by simply changing the value of the output_folder variable in the "main.py" script
+
+Lastly, if you want to sample it with more reports, simply change the value of the "limit" variable in the main file
