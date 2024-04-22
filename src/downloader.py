@@ -50,7 +50,7 @@ def download_report(url, br_number, output_folder, metadata_df, metadata_excel_f
 
         # Check if report already exists
         with metadata_lock:
-            if skip_existing and br_number in metadata_df['Brnum'].values:
+            if skip_existing and br_number in metadata_df.index:
                 print(f"Report {br_number} already exists. Skipping download.")
                 return False
 
@@ -154,6 +154,7 @@ def download_reports_from_excel(excel_file, url_column, br_number_column, output
                 thread = threading.Thread(target=download_report, args=(url, br_number, output_folder, metadata_df, metadata_excel_file, skip_existing))
                 threads.append(thread)
                 thread.start()
+                #download_report(url, br_number, output_folder, metadata_df, metadata_excel_file, skip_existing)
                 count += 1
 
         for thread in threads:
